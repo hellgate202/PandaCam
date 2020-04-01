@@ -1,0 +1,9 @@
+[submodule "ip/frame_buffer"]
+	path = ip/frame_buffer
+	url = https://github.com/hellgate202/frame_buffer
+[submodule "ip/csi2_rx"]
+	path = ip/csi2_rx
+	url = https://github.com/hellgate202/csi2_rx
+[submodule "ip/hdmi_tx"]
+	path = ip/hdmi_tx
+	url = https://github.com/hellgate202/hdmi_tx
