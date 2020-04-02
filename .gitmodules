@@ -7,3 +7,6 @@
 [submodule "ip/hdmi_tx"]
 	path = ip/hdmi_tx
 	url = https://github.com/hellgate202/hdmi_tx
+[submodule "lib/img_proc_lib"]
+	path = lib/img_proc_lib
+	url = https://github.com/hellgate202/img_proc_lib
