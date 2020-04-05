@@ -62,8 +62,9 @@ create_bd_cell -type ip -vlnv hellgate:user:csi2_2_lane_rx:1.0 csi2_2_lane_rx
 
 # Frame buffer to increase px clock to 148.5 MHz
 create_bd_cell -type ip -vlnv hellgate:user:frame_buffer:1.0 frame_buffer
-set_property -dict [ list      \
-  CONFIG.START_ADDR {1048576}] \
+set_property -dict [ list       \
+  CONFIG.START_ADDR {268435456} \
+  CONFIG.FRAMES_AMOUNT {3}]     \
 [get_bd_cells frame_buffer]
 
 # Just duplicates the values to RGB channels
