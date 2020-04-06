@@ -102,32 +102,38 @@ proc set_sccb_addr { sccb_addr } {
   puts "SCCB device ID has been set to [format %x $sccb_addr]"
 }
 
+proc rst_cam {} {
+  wr_csr 0x18 0x0
+  wr_csr 0x18 0x1
+  puts "Camera has been reseted"
+}
+
 proc get_head_err {} {
-  puts "There were [format %d 0x[rd_csr 0x18]] header errors"
+  puts "There were [format %d 0x[rd_csr 0x1c]] header errors"
 }
 
 proc get_corr_head_err {} {
-  puts "There were [format %d 0x[rd_csr 0x1c]] corrected header errors "
+  puts "There were [format %d 0x[rd_csr 0x20]] corrected header errors "
 }
 
 proc get_crc_err {} {
-  puts "There were [format %d 0x[rd_csr 0x20]] CRC errors"
+  puts "There were [format %d 0x[rd_csr 0x24]] CRC errors"
 }
 
 proc get_max_ln {} {
-  puts "Maximum frame size was [format %d 0x[rd_csr 0x24]] lines"
+  puts "Maximum frame size was [format %d 0x[rd_csr 0x28]] lines"
 }
 
 proc get_min_ln {} {
-  puts "Minimum frame size was [format %d 0x[rd_csr 0x28]] lines"
+  puts "Minimum frame size was [format %d 0x[rd_csr 0x2c]] lines"
 }
 
 proc get_max_px {} {
-  puts "Maximum line size was [format %d 0x[rd_csr 0x2c]] pixels"
+  puts "Maximum line size was [format %d 0x[rd_csr 0x30]] pixels"
 }
 
 proc get_min_px {} {
-  puts "Minimum line size was [format %d 0x[rd_csr 0x30]] pixels"
+  puts "Minimum line size was [format %d 0x[rd_csr 0x34]] pixels"
 }
 
 proc init {} {
