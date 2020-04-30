@@ -65,7 +65,7 @@ create_bd_cell -type ip -vlnv hellgate:user:csi2_2_lane_rx:1.0 csi2_2_lane_rx
 
 create_bd_cell -type ip -vlnv hellgate202:user:bilinear_demosaicing_3x3:1.0 bilinear_demosaicing_3x3
 set_property -dict [ list       \
-  CONFIG.CSR_BASE_ADDR {0}      \
+  CONFIG.CSR_BASE_ADDR {131072} \
   CONFIG.FRAME_RES_X {1920}     \
   CONFIG.FRAME_RES_Y {1080}     \
   CONFIG.RAW_PX_WIDTH {10}      \
