@@ -1,3 +1,5 @@
+set dbg 0
+
 # Project creation
 create_project pandacam . -part xc7z020clg400-1
 
@@ -417,6 +419,92 @@ save_constraints -force
 # Run Synthesis
 launch_runs synth_1 -jobs 4
 wait_on_run synth_1
+if { $dbg } {
+  open_run synth_1 -name synth_1
+  create_debug_core u_ila_0 ila
+  set_property C_DATA_DEPTH 2048 [get_debug_cores u_ila_0]
+  set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
+  set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
+  set_property C_ADV_TRIGGER false [get_debug_cores u_ila_0]
+  set_property C_INPUT_PIPE_STAGES 1 [get_debug_cores u_ila_0]
+  set_property C_EN_STRG_QUAL false [get_debug_cores u_ila_0]
+  set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
+  set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
+  startgroup
+    set_property C_EN_STRG_QUAL true [get_debug_cores u_ila_0 ]
+    set_property C_ADV_TRIGGER true [get_debug_cores u_ila_0 ]
+    set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0 ]
+    set_property ALL_PROBE_SAME_MU_CNT 4 [get_debug_cores u_ila_0 ]
+  endgroup
+  set_property port_width 1 [get_debug_ports u_ila_0/clk]
+  connect_debug_port u_ila_0/clk [get_nets [list pandacam_i/px_clk_mmcm/inst/clk_out2 ]]
+  set_property port_width 1 [get_debug_ports u_ila_0/probe0]
+  set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
+  connect_debug_port u_ila_0/probe0 [get_nets [list {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tuser[0]} ]]
+  create_debug_port u_ila_0 probe
+  set_property port_width 32 [get_debug_ports u_ila_0/probe1]
+  set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe1]
+  connect_debug_port u_ila_0/probe1 [get_nets [list {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[0]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[1]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[2]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[3]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[4]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[5]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[6]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[7]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[8]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[9]}  \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[10]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[11]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[12]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[13]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[14]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[15]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[16]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[17]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[18]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[19]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[20]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[21]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[22]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[23]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[24]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[25]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[26]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[27]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[28]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[29]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[30]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tdata[31]} ]]
+  create_debug_port u_ila_0 probe
+  set_property port_width 11 [get_debug_ports u_ila_0/probe2]
+  set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe2]
+  connect_debug_port u_ila_0/probe2 [get_nets [list {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[0]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[1]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[2]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[3]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[4]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[5]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[6]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[7]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[8]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[9]} \
+                                                    {pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt[10]} ]]
+  create_debug_port u_ila_0 probe
+  set_property port_width 1 [get_debug_ports u_ila_0/probe3]
+  set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe3]
+  connect_debug_port u_ila_0/probe3 [get_nets [list {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tlast} ]]
+  create_debug_port u_ila_0 probe
+  set_property port_width 1 [get_debug_ports u_ila_0/probe4]
+  set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe4]
+  connect_debug_port u_ila_0/probe4 [get_nets [list {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tready} ]]
+  create_debug_port u_ila_0 probe
+  set_property port_width 1 [get_debug_ports u_ila_0/probe5]
+  set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe5]
+  connect_debug_port u_ila_0/probe5 [get_nets [list {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tvalid} ]]
+  save_constraints
+  close_design
+}
 
 # Generate bitstream
 launch_runs impl_1 -to_step write_bitstream -jobs 4
