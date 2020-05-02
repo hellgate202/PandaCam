@@ -102,7 +102,7 @@ proc demosaicing_en {} {
   puts "Demosaicing has been enabled"
 }
 
-proc demosaicing_en {} {
+proc demosaicing_dis {} {
   wr_csr $::demosaicing_csr_offset 0 0
   puts "Demosaicing has been disabled"
 }
@@ -163,7 +163,7 @@ proc set_wb_mode { mode } {
 }
 
 proc wb_calibrate {} {
-  set wb_mode [rd_csr $white_ballance_csr_offset 0]
+  set wb_mode [rd_csr $::white_ballance_csr_offset 0]
   if { $wb_mode != 0x00000003 } {
     return "White balance corrector is not in calibration mode"
   }
