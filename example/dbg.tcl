@@ -1,3 +1,13 @@
+set sccb_csr_offset           0x00000000
+set csi2_csr_offset           0x00010000
+set demosaicing_csr_offset    0x00020000
+set white_ballance_csr_offset 0x00030000
+
+proc conv_csr { d } {
+  set h 0x[format %+08s [format %x [expr {$d * 4}]]]
+  return $h
+}
+
 proc rd { addr } { 
   create_hw_axi_txn read_txn -force [get_hw_axis hw_axi_1] -type READ -address $addr -len 1
   run_hw_axi [get_hw_axi_txns read_txn]
@@ -9,200 +19,154 @@ proc wr { addr data } {
   after 1
 }
 
-proc count_hex_sym {hex} {
-  set x 0
-  if {$hex > 0} {
-    for {set x 0} {$hex > 0} {incr x} {
-      set hex [expr {$hex / 16}]
-    }
-  }
-  return $x
-}
-
 proc rd_sccb_reg { addr } {
-  set sccb_addr [format %x $addr]
-  set axi_addr 0x0000$sccb_addr
-  set rd_data [rd $axi_addr]
-  return $rd_data
+  set rd_data [rd 0x[format %+08s [format %x $addr]]]
+  return 0x[string range $rd_data 6 7]
 }
 
 proc wr_sccb_reg { addr data } {
-  set sccb_addr [format %x $addr]
-  set axi_addr 0x0000$sccb_addr
-  set axi_data [format %x $data]
-  set nums [count_hex_sym $data]
-  if { $nums == 2 } {
-    set axi_data 0x000000$axi_data
-  } else {
-    set axi_data 0x0000000$axi_data
-  }
+  set axi_addr [format %+08s [format %x $addr]]
+  set axi_data [format %+08s [format %x $data]]
   wr $axi_addr $axi_data
 }
 
-proc rd_csr { addr } {
-  set csr_addr [format %x $addr]
-  set nums [count_hex_sym $addr]
-  if { $nums == 4 } {
-    set axi_addr 0x0001$csr_addr
-  } elseif { $nums == 3 } {
-    set axi_addr 0x00010$csr_addr
-  } elseif { $nums == 2 } {
-    set axi_addr 0x000100$csr_addr
-  } else {
-    set axi_addr 0x0001000$csr_addr
-  }
+proc rd_csr { offset reg_num } {
+  set axi_addr 0x[format %+08s [format %x [expr {$offset + [conv_csr $reg_num]}]]]
   set rd_data [rd $axi_addr]
-  return $rd_data
+  return 0x$rd_data
 }
 
-proc wr_csr { addr data } {
-  set csr_addr [format %x $addr]
-  set nums [count_hex_sym $addr]
-  if { $nums == 4 } {
-    set axi_addr 0x0001$csr_addr
-  } elseif { $nums == 3 } {
-    set axi_addr 0x00010$csr_addr
-  } elseif { $nums == 2 } {
-    set axi_addr 0x000100$csr_addr
-  } else {
-    set axi_addr 0x0001000$csr_addr
-  }
-  set axi_data [format %x $data]
-  set nums [count_hex_sym $data]
-  if { $nums == 4 } {
-    set axi_data 0x0000$axi_data
-  } elseif { $nums == 3 } {
-    set axi_data 0x00000$axi_data
-  } elseif { $nums == 2 } {
-    set axi_data 0x000000$axi_data
-  } else {
-    set axi_data 0x0000000$axi_data
-  }
+proc wr_csr { offset reg_num data } {
+  set axi_addr 0x[format %+08s [format %x [expr {$offset + [conv_csr $reg_num]}]]]
+  set axi_data [format %+08s [format %x $data]]
   wr $axi_addr $axi_data
 }
 
 proc dphy_en {} {
-  wr_csr 0x04 0x1
+  wr_csr $::csi2_csr_offset 1 1
   puts "PHY has been enabled"
 }
 
 proc dphy_dis {} {
-  wr_csr 0x04 0x0 
+  wr_csr $::csi2_csr_offset 1 0 
   puts "PHY has been disabled"
 }
 
 proc clear_stat {} {
-  wr_csr 0x00 0x0
-  wr_csr 0x00 0x1
+  wr_csr $::csi2_csr_offset 0 0
+  wr_csr $::csi2_csr_offset 0 1
   puts "Statistics cleared"
 }
 
 proc set_sccb_addr { sccb_addr } {
-  wr_csr 0x08 $sccb_addr
-  puts "SCCB device ID has been set to [format %x $sccb_addr]"
+  wr_csr $::csi2_csr_offset 2 $sccb_addr
+  puts "SCCB device ID has been set to 0x[string range [format %x $sccb_addr] 7 8]"
 }
 
 proc rst_cam {} {
-  wr_csr 0x18 0x0
-  wr_csr 0x18 0x1
+  wr_csr $::csi2_csr_offset 6 0
+  wr_csr $::csi2_csr_offset 6 1
   puts "Camera has been reseted"
 }
 
 proc get_head_err {} {
-  puts "There were [format %d 0x[rd_csr 0x1c]] header errors"
+  puts "There were [format %d [rd_csr $::csi2_csr_offset 7]] header errors"
 }
 
 proc get_corr_head_err {} {
-  puts "There were [format %d 0x[rd_csr 0x20]] corrected header errors "
+  puts "There were [format %d [rd_csr $::csi2_csr_offset 8]] corrected header errors "
 }
 
 proc get_crc_err {} {
-  puts "There were [format %d 0x[rd_csr 0x24]] CRC errors"
+  puts "There were [format %d [rd_csr $::csi2_csr_offset 9]] CRC errors"
 }
 
 proc get_max_ln {} {
-  puts "Maximum frame size was [format %d 0x[rd_csr 0x28]] lines"
+  puts "Maximum frame size was [format %d [rd_csr $::csi2_csr_offset 10]] lines"
 }
 
 proc get_min_ln {} {
-  puts "Minimum frame size was [format %d 0x[rd_csr 0x2c]] lines"
+  puts "Minimum frame size was [format %d [rd_csr $::csi2_csr_offset 11]] lines"
 }
 
 proc get_max_px {} {
-  puts "Maximum line size was [format %d 0x[rd_csr 0x30]] pixels"
+  puts "Maximum line size was [format %d [rd_csr $::csi2_csr_offset 12]] pixels"
 }
 
 proc get_min_px {} {
-  puts "Minimum line size was [format %d 0x[rd_csr 0x34]] pixels"
+  puts "Minimum line size was [format %d 0x[rd_csr $::csi2_csr_offset 13]] pixels"
 }
 
-proc init {} {
-  set sensor_id_reg_0 0x[rd_sccb_reg 0x300a]
-  set sensor_id_reg_1 0x[rd_sccb_reg 0x300b]
-  if { [format %x $sensor_id_reg_0] != [format %x 0x00000056] ||
-       [format %x $sensor_id_reg_1] != [format %x 0x00000040] } { 
-    puts "Sensor ID missmatches"
-    return 0
+proc demosaicing_en {} {
+  wr_csr $::demosaicing_csr_offset 0 1
+  puts "Demosaicing has been enabled"
+}
+
+proc demosaicing_en {} {
+  wr_csr $::demosaicing_csr_offset 0 0
+  puts "Demosaicing has been disabled"
+}
+
+proc set_demosaicing { pattern } {
+  if { $pattern == "rggb" } {
+    wr_csr $::demosaicing_csr_offset 1 0
+  } elseif { $pattern == "grbg" } {
+    wr_csr $::demosaicing_csr_offset 1 1
+  } elseif { $pattern == "gbrg" } {
+    wr_csr $::demosaicing_csr_offset 1 2
+  } elseif { $pattern == "bggr" } {
+    wr_csr $::demosaicing_csr_offset 1 3
   } else {
-    puts "Sensor ID matches"
-    return 1
+    puts "Unsupported Bayer pattern"
   }
-  wr_sccb_reg 0x3103 0x11
-  wr_sccb_reg 0x3008 0x82
-  after 10
-  wr_sccb_reg 0x3008 0x42
 }
 
-proc sensor_settings {} {
-  wr_sccb_reg 0x3103 0x03
-  wr_sccb_reg 0x3035 0x21
-  wr_sccb_reg 0x3036 0x69
-  wr_sccb_reg 0x3037 0x05
-  wr_sccb_reg 0x303d 0x10
-  wr_sccb_reg 0x303b 0x19
-  wr_sccb_reg 0x300e 0x45
-  wr_sccb_reg 0x4800 0x14
-  wr_sccb_reg 0x302e 0x08
-  wr_sccb_reg 0x3108 0x11
-  wr_sccb_reg 0x3034 0x1a
-  wr_sccb_reg 0x3800 0x01
-  wr_sccb_reg 0x3801 0x50
-  wr_sccb_reg 0x3802 0x01
-  wr_sccb_reg 0x3803 0xaa
-  wr_sccb_reg 0x3804 0x08
-  wr_sccb_reg 0x3805 0xef
-  wr_sccb_reg 0x3806 0x05
-  wr_sccb_reg 0x3807 0xf9
-  wr_sccb_reg 0x3810 0x00
-  wr_sccb_reg 0x3811 0x10
-  wr_sccb_reg 0x3812 0x00
-  wr_sccb_reg 0x3813 0x0c
-  wr_sccb_reg 0x3808 0x07
-  wr_sccb_reg 0x3809 0x80
-  wr_sccb_reg 0x380a 0x04
-  wr_sccb_reg 0x380b 0x38
-  wr_sccb_reg 0x380c 0x09
-  wr_sccb_reg 0x380d 0xc4
-  wr_sccb_reg 0x380e 0x04
-  wr_sccb_reg 0x380f 0x60
-  wr_sccb_reg 0x3814 0x11
-  wr_sccb_reg 0x3815 0x11
-  wr_sccb_reg 0x3821 0x00
-  wr_sccb_reg 0x4818 0x01
-  wr_sccb_reg 0x4837 0x18
-  wr_sccb_reg 0x3618 0x00
-  wr_sccb_reg 0x3612 0x59
-  wr_sccb_reg 0x3708 0x64
-  wr_sccb_reg 0x3709 0x52
-  wr_sccb_reg 0x370c 0x03
-  wr_sccb_reg 0x4300 0x00
-  wr_sccb_reg 0x501f 0x03
-  wr_sccb_reg 0x3008 0x02
+proc set_wb_coefficients {r g b} {
+  set r_int [expr {int( $r )}]
+  set r_fract [expr {int( ( $r - $r_int ) * 2 ** 10 )}]
+  set r 0x[format %+08s [format %x [expr {$r_fract + $r_int * 2 ** 10}]]]
+  set g_int [expr {int( $g )}]
+  set g_fract [expr {int( ( $g - $g_int ) * 2 ** 10 )}]
+  set g 0x[format %+08s [format %x [expr {$g_fract + $g_int * 2 ** 10}]]]
+  set b_int [expr {int( $b )}]
+  set b_fract [expr {int( ( $b - $b_int ) * 2 ** 10 )}]
+  set b 0x[format %+08s [format %x [expr {$b_fract + $b_int * 2 ** 10}]]]
+  wr_csr $::white_ballance_csr_offset 2 0
+  wr_csr $::white_ballance_csr_offset 3 $r
+  wr_csr $::white_ballance_csr_offset 4 0
+  wr_csr $::white_ballance_csr_offset 4 1
+  wr_csr $::white_ballance_csr_offset 2 1
+  wr_csr $::white_ballance_csr_offset 3 $g
+  wr_csr $::white_ballance_csr_offset 4 0
+  wr_csr $::white_ballance_csr_offset 4 1
+  wr_csr $::white_ballance_csr_offset 2 2
+  wr_csr $::white_ballance_csr_offset 3 $b
+  wr_csr $::white_ballance_csr_offset 4 0
+  wr_csr $::white_ballance_csr_offset 4 1
 }
 
-proc run {} {
-  dphy_en
-  set_sccb_addr { 0x3c }
-  init
-  sensor_settings
+proc set_wb_mode { mode } {
+  if { $mode == "auto_gw" } {
+    wr_csr $::white_ballance_csr_offset 0 0
+  } elseif { $mode == "auto_retinex" } {
+    wr_csr $::white_ballance_csr_offset 0 1
+  } elseif { $mode == "manual" } {
+    wr_csr $::white_ballance_csr_offset 0 2
+  } elseif { $mode == "calibration" } {
+    wr_csr $::white_ballance_csr_offset 0 3
+  } elseif { $mode == "off" } {
+    set_wb_coefficients 1.0 1.0 1.0
+    wr_csr $::white_ballance_csr_offset 0 2
+  } else {
+    puts "Unsuported white balance mode"
+  }
+}
+
+proc wb_calibrate {} {
+  set wb_mode [rd_csr $white_ballance_csr_offset 0]
+  if { $wb_mode != 0x00000003 } {
+    return "White balance corrector is not in calibration mode"
+  }
+  wr_csr $::white_ballance_csr_offset 1 0
+  wr_csr $::white_ballance_csr_offset 1 1
 }
