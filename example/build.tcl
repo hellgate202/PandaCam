@@ -1,4 +1,4 @@
-set dbg 0
+set dbg [lindex $argv 0]
 
 # Project creation
 create_project pandacam . -part xc7z020clg400-1
@@ -502,6 +502,10 @@ if { $dbg } {
   set_property port_width 1 [get_debug_ports u_ila_0/probe5]
   set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe5]
   connect_debug_port u_ila_0/probe5 [get_nets [list {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tvalid} ]]
+  create_debug_port u_ila_0 probe
+  set_property port_width 1 [get_debug_ports u_ila_0/probe6]
+  set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe6]
+  connect_debug_port u_ila_0/probe6 [get_nets [list pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o_tfirst ]]
   save_constraints
   close_design
 }
