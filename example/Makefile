@@ -13,6 +13,8 @@ prog:
 	Digilent/210351A6C9FAA/ -debugdevice deviceNr 2
 dbg:
 	vivado -mode tcl -source connect.tcl
+snapshot:
+	vivado -mode tcl -source capture.tcl
 clean:
 	rm -rf .Xil/
 	rm -rf BOOT.bin
