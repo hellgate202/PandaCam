@@ -5,10 +5,10 @@ import cv2
 import sys
 import os
 
-img_path = sys.argv[1]
-x = int( sys.argv[2] )
-y = int( sys.argv[3] )
-px_width = int( sys.argv[4] )
+img_path = "./img.hex"
+x = 1920
+y = 1080
+px_width = 8
 value_mult = 2 ** ( px_width - 8 )
 
 d_img = np.zeros( ( y, x, 3 ), np.uint8 )

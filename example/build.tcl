@@ -1,4 +1,4 @@
-set capture [expr { int( [lindex $argv 0] ) }]
+set capture [lindex $argv 0]
 
 # Project creation
 create_project pandacam . -part xc7z020clg400-1
@@ -91,18 +91,32 @@ set_property -dict [ list       \
 [get_bd_cells white_ballance_corrector] 
 
 # Frame buffer to increase px clock to 148.5 MHz
-create_bd_cell -type ip -vlnv hellgate202:user:frame_buffer:1.0 frame_buffer
-set_property -dict [ list       \
-  CONFIG.START_ADDR {268435456} \
-  CONFIG.FRAMES_AMOUNT {3}      \
-  CONFIG.PX_WIDTH {30}          \
-  CONFIG.FRAME_RES_X {1920}     \
-  CONFIG.FRAME_RES_Y {1080}     \
-  CONFIG.TDATA_WIDTH {32}       \
-  CONFIG.TDATA_WIDTH_B {4}      \
-  CONFIG.CAPTURE_EN {1}]        \
-[get_bd_cells frame_buffer]
+if { $capture } {
+  create_bd_cell -type ip -vlnv hellgate202:user:frame_buffer:1.0 frame_buffer
+  set_property -dict [ list       \
+    CONFIG.START_ADDR {268435456} \
+    CONFIG.FRAMES_AMOUNT {3}      \
+    CONFIG.PX_WIDTH {30}          \
+    CONFIG.FRAME_RES_X {1920}     \
+    CONFIG.FRAME_RES_Y {1080}     \
+    CONFIG.TDATA_WIDTH {32}       \
+    CONFIG.TDATA_WIDTH_B {4}      \
+    CONFIG.CAPTURE_EN {1}]        \
+  [get_bd_cells frame_buffer]
+} else {
+  create_bd_cell -type ip -vlnv hellgate202:user:frame_buffer:1.0 frame_buffer
+  set_property -dict [ list       \
+    CONFIG.START_ADDR {268435456} \
+    CONFIG.FRAMES_AMOUNT {3}      \
+    CONFIG.PX_WIDTH {30}          \
+    CONFIG.FRAME_RES_X {1920}     \
+    CONFIG.FRAME_RES_Y {1080}     \
+    CONFIG.TDATA_WIDTH {32}       \
+    CONFIG.TDATA_WIDTH_B {4}      \
+    CONFIG.CAPTURE_EN {0}]        \
+  [get_bd_cells frame_buffer]
 
+}
 # Connecting clocks
 # 200 MHz
 connect_bd_net [get_bd_pins zynq_ps/FCLK_CLK0] [get_bd_pins px_clk_mmcm/clk_in1]
