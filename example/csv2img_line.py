@@ -11,9 +11,9 @@ csv_dict = csv.DictReader( f_csv, delimiter=',' )
 i = 0
 
 for line in csv_dict:
-  f_hex.write( line["pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\\\.tdata_1[9:2]"] + "\n" )
-  f_hex.write( line["pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\\\.tdata_2[19:12]"] + "\n" )
-  f_hex.write( line["pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\\\.tdata[29:22]"] + "\n" )
+  f_hex.write( line["pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_g[7:0]"] + "\n" )
+  f_hex.write( line["pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_b[7:0]"] + "\n" )
+  f_hex.write( line["pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_r[7:0]"] + "\n" )
   i = i + 1
   if i == 1920:
     break

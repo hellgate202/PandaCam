@@ -173,14 +173,15 @@ proc wb_calibrate {} {
 
 proc get_snapshot {} {
   dphy_dis
+  set_property CONTROL.TRIGGER_POSITION 0 [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
   set_property CONTROL.CAPTURE_MODE BASIC [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
-    set_property TRIGGER_COMPARE_VALUE eq11'hXXX [get_hw_probes pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
-  set_property TRIGGER_COMPARE_VALUE eq1'bX [get_hw_probes pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o_tfirst -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
-  set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tready} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
-  set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tvalid} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
-  set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tuser} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
-  set_property CAPTURE_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tvalid} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
-  set_property CAPTURE_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tready} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+    set_property TRIGGER_COMPARE_VALUE eq11'hXXX [get_hw_probes pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.line_cnt -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+  set_property TRIGGER_COMPARE_VALUE eq1'bX [get_hw_probes pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_tfirst -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+  set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_tready} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+  set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_tvalid} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+  set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_tuser} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+  set_property CAPTURE_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_tvalid} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+  set_property CAPTURE_COMPARE_VALUE eq1'b1 [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_tready} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
   run_hw_ila [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
   wait_on_hw_ila [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
   upload_hw_ila_data [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
@@ -188,12 +189,12 @@ proc get_snapshot {} {
   exec ./csv2img_line.py ./capture.csv ./img.hex
   puts "1 / 1080 captured"
   
-  set_property TRIGGER_COMPARE_VALUE eq1'bX [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o\\.tuser} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
-  set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes pandacam_i/frame_buffer/inst/frame_buffer_inst/video_o_tfirst -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+  set_property TRIGGER_COMPARE_VALUE eq1'bX [get_hw_probes {pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_tuser} -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+  set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.video_o_tfirst -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
   
   for {set i 1} {$i < 1080} {incr i} {
     set line_num [format %+03s [format %x $i]]
-    set_property TRIGGER_COMPARE_VALUE eq11'h$line_num [get_hw_probes pandacam_i/frame_buffer/inst/frame_buffer_inst/line_cnt -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
+    set_property TRIGGER_COMPARE_VALUE eq11'h$line_num [get_hw_probes pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.line_cnt -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
     run_hw_ila [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
     wait_on_hw_ila [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
     upload_hw_ila_data [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
@@ -201,8 +202,5 @@ proc get_snapshot {} {
     exec ./csv2img_line.py ./capture.csv ./img.hex
     puts "[expr {$i + 1}] / 1080 captured"
   }
-  exec ./save_img.py img.hex 1920 1080 8
-  exec rm ./img.hex
-  exec rm ./capture.csv
   dphy_en
 }

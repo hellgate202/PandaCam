@@ -3,6 +3,7 @@
 import numpy as np
 import cv2
 import sys
+import os
 
 img_path = sys.argv[1]
 x = int( sys.argv[2] )
@@ -25,3 +26,5 @@ for i in range( y ):
     d_img[i][j][2] = ( int( ( "0x" + l ), 16 ) / value_mult );
 
 cv2.imwrite( "snapshot.png", d_img )
+os.remove( "img.hex" )
+os.remove( "capture.csv" )
