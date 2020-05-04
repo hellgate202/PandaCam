@@ -1,7 +1,8 @@
-set sccb_csr_offset           0x00000000
-set csi2_csr_offset           0x00010000
-set demosaicing_csr_offset    0x00020000
-set white_ballance_csr_offset 0x00030000
+set sccb_csr_offset            0x00000000
+set csi2_csr_offset            0x00010000
+set demosaicing_csr_offset     0x00020000
+set white_ballance_csr_offset  0x00030000
+set color_corrector_csr_offset 0x00040000
 
 proc conv_csr { d } {
   set h 0x[format %+08s [format %x [expr {$d * 4}]]]
@@ -169,6 +170,80 @@ proc wb_calibrate {} {
   }
   wr_csr $::white_ballance_csr_offset 1 0
   wr_csr $::white_ballance_csr_offset 1 1
+}
+
+proc cc_set_one_element { n value } {
+  if { $value >= 0 } {
+    set sign 0
+  } else {
+    set sign 1
+  }
+  set value [expr {abs( $value )}]
+  set value_int [expr {int( $value )}]
+  set value_fract [expr {int( ( $value - $value_int ) * 2 ** 10 )}]
+  set value [expr {$value_fract + $value_int * 2 ** 10}]
+  if { $sign } {
+    set value 0x[format %+08s [format %x [expr {$value + 2 ** 20}]]]
+  }
+  switch $n {
+    a11 {
+      wr_csr $::color_corrector_csr_offset 1 0
+    }
+    a12 {
+      wr_csr $::color_corrector_csr_offset 1 1
+    }
+    a13 {
+      wr_csr $::color_corrector_csr_offset 1 2
+    }
+    a14 {
+      wr_csr $::color_corrector_csr_offset 1 3
+    }
+    a21 {
+      wr_csr $::color_corrector_csr_offset 1 4
+    }
+    a22 {
+      wr_csr $::color_corrector_csr_offset 1 5
+    }
+    a23 {
+      wr_csr $::color_corrector_csr_offset 1 6
+    }
+    a24 {
+      wr_csr $::color_corrector_csr_offset 1 7
+    }
+    a31 {
+      wr_csr $::color_corrector_csr_offset 1 8
+    }
+    a32 {
+      wr_csr $::color_corrector_csr_offset 1 9
+    }
+    a33 {
+      wr_csr $::color_corrector_csr_offset 1 10
+    }
+    a34 {
+      wr_csr $::color_corrector_csr_offset 1 11
+    }
+    default {
+      puts "Wrong element number"
+    }
+  }
+  wr_csr $::color_corrector_csr_offset 2 $value
+  wr_csr $::color_corrector_csr_offset 0 1
+  wr_csr $::color_corrector_csr_offset 0 0
+}
+
+proc set_cc_matrix { a11 a12 a13 a14 a21 a22 a23 a24 a31 a32 a33 a34 } {
+  cc_set_one_element a11 $a11
+  cc_set_one_element a12 $a12
+  cc_set_one_element a13 $a13
+  cc_set_one_element a14 $a14
+  cc_set_one_element a21 $a21
+  cc_set_one_element a22 $a22
+  cc_set_one_element a23 $a23
+  cc_set_one_element a24 $a24
+  cc_set_one_element a31 $a31
+  cc_set_one_element a32 $a32
+  cc_set_one_element a33 $a33
+  cc_set_one_element a34 $a34
 }
 
 proc get_snapshot {} {
