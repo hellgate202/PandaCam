@@ -246,6 +246,16 @@ proc set_cc_matrix { a11 a12 a13 a14 a21 a22 a23 a24 a31 a32 a33 a34 } {
   cc_set_one_element a34 $a34
 }
 
+proc set_exposure { e } {
+  wr_sccb_reg 0x3500 0x00
+  wr_sccb_reg 0x3501 0x[format %+02s [format %x $e]]
+}
+
+proc set_gain { g } {
+  wr_sccb_reg 0x350a [expr {$g / 256}]
+  wr_sccb_reg 0x350b [expr {$g % 256}]
+}
+
 proc get_snapshot {} {
   dphy_dis
   set_property CONTROL.TRIGGER_POSITION 0 [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
