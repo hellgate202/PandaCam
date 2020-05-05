@@ -250,7 +250,7 @@ proc set_cc_matrix { a11 a12 a13 a14 a21 a22 a23 a24 a31 a32 a33 a34 } {
 proc set_gamma_coefficient { gamma } {
   for {set i 0} {$i < 1024} {incr i} {
     puts "Gamma LUT initialization: $i / 1023"
-    set table_val_double [expr {( [expr {double( $i )}] / 4096 ) ** $gamma * 4096}] 
+    set table_val_double [expr {( [expr {double( $i )}] / 1024 ) ** $gamma * 1024}] 
     set table_val_int [expr {int( $table_val_double )}]
     set table_val_hex 0x[format %+08s [format %x $table_val_int]]
     set table_addr_hex 0x[format %+08s [format %x $i]]
