@@ -471,7 +471,7 @@ save_constraints -force
 # Run Synthesis
 launch_runs synth_1 -jobs 4
 wait_on_run synth_1
-if { $capture } {
+if { $capture > 0 } {
   open_run synth_1 -name synth_1
   create_debug_core u_ila_0 ila
   set_property C_DATA_DEPTH 2048 [get_debug_cores u_ila_0]
