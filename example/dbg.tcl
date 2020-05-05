@@ -3,6 +3,7 @@ set csi2_csr_offset            0x00010000
 set demosaicing_csr_offset     0x00020000
 set white_ballance_csr_offset  0x00030000
 set color_corrector_csr_offset 0x00040000
+set gamma_csr_offset           0x00050000
 
 proc conv_csr { d } {
   set h 0x[format %+08s [format %x [expr {$d * 4}]]]
@@ -244,6 +245,20 @@ proc set_cc_matrix { a11 a12 a13 a14 a21 a22 a23 a24 a31 a32 a33 a34 } {
   cc_set_one_element a32 $a32
   cc_set_one_element a33 $a33
   cc_set_one_element a34 $a34
+}
+
+proc set_gamma_coefficient { gamma } {
+  for {set i 0} {$i < 1024} {incr i} {
+    puts "Gamma LUT initialization: $i / 1023"
+    set table_val_double [expr {( [expr {double( $i )}] / 4096 ) ** $gamma * 4096}] 
+    set table_val_int [expr {int( $table_val_double )}]
+    set table_val_hex 0x[format %+08s [format %x $table_val_int]]
+    set table_addr_hex 0x[format %+08s [format %x $i]]
+    wr_csr $::gamma_csr_offset 0 $table_addr_hex
+    wr_csr $::gamma_csr_offset 1 $table_val_hex
+    wr_csr $::gamma_csr_offset 2 1
+    wr_csr $::gamma_csr_offset 2 0
+  }
 }
 
 proc set_exposure { e } {
