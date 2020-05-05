@@ -268,7 +268,7 @@ connect_bd_intf_net [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins zynq_ps/FIXED
 assign_bd_address [get_bd_addr_segs {csi2_2_lane_rx/csi2_csr/csi2_csr }]
 assign_bd_address [get_bd_addr_segs {csi2_2_lane_rx/sccb_ctrl/sccb_ctrl }]
 assign_bd_address [get_bd_addr_segs {bilinear_demosaicing_3x3/csr }]
-set_property offset 0x00050000 [get_bd_addr_segs {jtag_axi/Data/SEG_color_corrector_csr}]
+set_property offset 0x00050000 [get_bd_addr_segs {jtag_axi/Data/SEG_gamma_corrector_csr}]
 set_property offset 0x00040000 [get_bd_addr_segs {jtag_axi/Data/SEG_color_corrector_csr}]
 set_property offset 0x00030000 [get_bd_addr_segs {jtag_axi/Data/SEG_white_balance_corrector_csr}]
 set_property offset 0x00020000 [get_bd_addr_segs {jtag_axi/Data/SEG_bilinear_demosaicing_3x3_csr}]
