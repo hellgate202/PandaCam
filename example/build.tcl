@@ -64,6 +64,9 @@ create_bd_cell -type ip -vlnv hellgate202:user:hdmi_tx:1.0 hdmi_tx
 
 # Add CSI2-RX IP-core
 create_bd_cell -type ip -vlnv hellgate:user:csi2_2_lane_rx:1.0 csi2_2_lane_rx
+set_property -dict [ list      \
+  CONFIG.CONTINIOUS_VALID {0}] \
+[get_bd_cells csi2_2_lane_rx]
 
 create_bd_cell -type ip -vlnv hellgate202:user:bilinear_demosaicing_3x3:1.0 bilinear_demosaicing_3x3
 set_property -dict [ list       \
@@ -420,8 +423,8 @@ create_clock -period 2.976 -name dphy_clk -waveform {0.000 1.488} [get_ports dph
 set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/byte_align[*].settle_ignore/FSM_onehot_state_reg[4]] -to \
                                    [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/hs_data_valid_d1_reg[*]] 5.000
 
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/hs_data_valid_d1_reg[*]]
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/hs_data_valid_d2_reg[*]]
+#set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/hs_data_valid_d1_reg[*]]
+#set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/hs_data_valid_d2_reg[*]]
 
 set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_detect/clk_presence_cnt_reg[*]] -to \
                                    [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_loss_rst*] 5.000
