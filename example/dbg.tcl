@@ -99,6 +99,16 @@ proc get_min_px {} {
   puts "Minimum line size was [format %d 0x[rd_csr $::csi2_csr_offset 13]] pixels"
 }
 
+proc get_dphy_clk {} {
+  set clk [format %d [rd_csr $::csi2_csr_offset 14]]
+  puts "DPHY byte clk is [expr { $clk / 1e6 }] MHz"
+  puts "Link speed is [expr { $clk * 8 * 2 / 1e6}] Mbit/s"
+}
+
+proc get_fps {} {
+  puts "Stream speed is [format %d [rd_csr $::csi2_csr_offset 15]] FPS"
+}
+
 proc demosaicing_en {} {
   wr_csr $::demosaicing_csr_offset 0 1
   puts "Demosaicing has been enabled"
