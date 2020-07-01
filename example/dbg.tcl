@@ -284,6 +284,21 @@ proc set_cc_matrix { a11 a12 a13 a14 a21 a22 a23 a24 a31 a32 a33 a34 } {
   cc_set_one_element a34 $a34
 }
 
+proc get_cc_matrix {} {
+  for {set i 0} {$i < 12} {incr i} {
+    wr_csr $::color_corrector_csr_offset 1 $i
+    set a_hex [rd_csr $::color_corrector_csr_offset 3]
+    set a_fract [expr {int($a_hex) % int(pow(2,10))}]
+    set a_int [expr {($a_hex - $a_fract) / pow(2,10)}]
+    set a_fract [expr {$a_fract / pow(2,10)}]
+    set a_fix [expr {$a_int + $a_fract}]
+    if {$a_fix >= 1024} {
+      set a_fix [expr {-($a_fix - 1024)}]
+    }
+    puts "$a_hex | $a_fix"
+  }
+}
+
 proc set_gamma_coefficient { gamma } {
   for {set i 0} {$i < 1024} {incr i} {
     puts "Gamma LUT initialization: $i / 1023"
@@ -307,13 +322,25 @@ proc med_flt_dis {} {
 }
 
 proc set_exposure { e } {
-  wr_sccb_reg 0x3500 0x00
-  wr_sccb_reg 0x3501 0x[format %+02s [format %x $e]]
+  wr_sccb_reg 0x0202 [expr {$e / 256}]
+  wr_sccb_reg 0x0203 [expr {$e % 256}]
+}
+
+proc get_exposure {} {
+  set e_high [format %d [rd_sccb_reg 0x0202]]
+  set e_low [format %d [rd_sccb_reg 0x0203]]
+  puts "Exposure is set to [expr {$e_high * 256 + $e_low}]"
 }
 
 proc set_gain { g } {
-  wr_sccb_reg 0x350a [expr {$g / 256}]
-  wr_sccb_reg 0x350b [expr {$g % 256}]
+  wr_sccb_reg 0x0204 [expr {$g / 256}]
+  wr_sccb_reg 0x0205 [expr {$g % 256}]
+}
+
+proc get_gain {} {
+  set g_high [format %d [rd_sccb_reg 0x0204]]
+  set g_low [format %d [rd_sccb_reg 0x0205]]
+  puts "Gain is set to [expr {$g_high * 256 + $g_low}]"
 }
 
 proc get_snapshot {} {
