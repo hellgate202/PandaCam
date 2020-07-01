@@ -4,6 +4,7 @@ set demosaicing_csr_offset     0x00020000
 set white_ballance_csr_offset  0x00030000
 set color_corrector_csr_offset 0x00040000
 set gamma_csr_offset           0x00050000
+set median_filter_csr_offset   0x00060000
 
 proc conv_csr { d } {
   set h 0x[format %+08s [format %x [expr {$d * 4}]]]
@@ -183,6 +184,32 @@ proc wb_calibrate {} {
   wr_csr $::white_ballance_csr_offset 1 1
 }
 
+proc get_wb_coefficients {} {
+  wr_csr $::white_ballance_csr_offset 2 0
+  set r_hex [rd_csr $::white_ballance_csr_offset 5]
+  wr_csr $::white_ballance_csr_offset 2 1
+  set g_hex [rd_csr $::white_ballance_csr_offset 5]
+  wr_csr $::white_ballance_csr_offset 2 2
+  set b_hex [rd_csr $::white_ballance_csr_offset 5]
+  set r_fract [expr {int($r_hex) % int(pow(2,10))}]
+  set r_int [expr {($r_hex - $r_fract) / pow(2,10)}]
+  set r_fract [expr {$r_fract / pow(2,10)}]
+  set r_fix [expr {$r_fract + $r_int}]
+  puts "Red coefficient   $r_hex | $r_fix"
+
+  set g_fract [expr {int($g_hex) % int(pow(2,10))}]
+  set g_int [expr {($g_hex - $g_fract) / pow(2,10)}]
+  set g_fract [expr {$g_fract / pow(2,10)}]
+  set g_fix [expr {$g_fract + $g_int}]
+  puts "Green coefficient $g_hex | $g_fix"
+
+  set b_fract [expr {int($b_hex) % int(pow(2,10))}]
+  set b_int [expr {($b_hex - $b_fract) / pow(2,10)}]
+  set b_fract [expr {$b_fract / pow(2,10)}]
+  set b_fix [expr {$b_fract + $b_int}]
+  puts "Blue coefficient  $b_hex | $b_fix"
+}
+
 proc cc_set_one_element { n value } {
   if { $value >= 0 } {
     set sign 0
@@ -269,6 +296,14 @@ proc set_gamma_coefficient { gamma } {
     wr_csr $::gamma_csr_offset 2 1
     wr_csr $::gamma_csr_offset 2 0
   }
+}
+
+proc med_flt_en {} {
+  wr_csr $::median_filter_csr_offset 0 1
+}
+
+proc med_flt_dis {} {
+  wr_csr $::median_filter_csr_offset 0 0
 }
 
 proc set_exposure { e } {
