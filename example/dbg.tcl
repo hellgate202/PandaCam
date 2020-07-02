@@ -4,6 +4,7 @@ set demosaicing_csr_offset     0x00020000
 set white_ballance_csr_offset  0x00030000
 set color_corrector_csr_offset 0x00040000
 set gamma_csr_offset           0x00050000
+set median_filter_csr_offset   0x00060000
 
 proc conv_csr { d } {
   set h 0x[format %+08s [format %x [expr {$d * 4}]]]
@@ -183,6 +184,32 @@ proc wb_calibrate {} {
   wr_csr $::white_ballance_csr_offset 1 1
 }
 
+proc get_wb_coefficients {} {
+  wr_csr $::white_ballance_csr_offset 2 0
+  set r_hex [rd_csr $::white_ballance_csr_offset 5]
+  wr_csr $::white_ballance_csr_offset 2 1
+  set g_hex [rd_csr $::white_ballance_csr_offset 5]
+  wr_csr $::white_ballance_csr_offset 2 2
+  set b_hex [rd_csr $::white_ballance_csr_offset 5]
+  set r_fract [expr {int($r_hex) % int(pow(2,10))}]
+  set r_int [expr {($r_hex - $r_fract) / pow(2,10)}]
+  set r_fract [expr {$r_fract / pow(2,10)}]
+  set r_fix [expr {$r_fract + $r_int}]
+  puts "Red coefficient   $r_hex | $r_fix"
+
+  set g_fract [expr {int($g_hex) % int(pow(2,10))}]
+  set g_int [expr {($g_hex - $g_fract) / pow(2,10)}]
+  set g_fract [expr {$g_fract / pow(2,10)}]
+  set g_fix [expr {$g_fract + $g_int}]
+  puts "Green coefficient $g_hex | $g_fix"
+
+  set b_fract [expr {int($b_hex) % int(pow(2,10))}]
+  set b_int [expr {($b_hex - $b_fract) / pow(2,10)}]
+  set b_fract [expr {$b_fract / pow(2,10)}]
+  set b_fix [expr {$b_fract + $b_int}]
+  puts "Blue coefficient  $b_hex | $b_fix"
+}
+
 proc cc_set_one_element { n value } {
   if { $value >= 0 } {
     set sign 0
@@ -257,6 +284,21 @@ proc set_cc_matrix { a11 a12 a13 a14 a21 a22 a23 a24 a31 a32 a33 a34 } {
   cc_set_one_element a34 $a34
 }
 
+proc get_cc_matrix {} {
+  for {set i 0} {$i < 12} {incr i} {
+    wr_csr $::color_corrector_csr_offset 1 $i
+    set a_hex [rd_csr $::color_corrector_csr_offset 3]
+    set a_fract [expr {int($a_hex) % int(pow(2,10))}]
+    set a_int [expr {($a_hex - $a_fract) / pow(2,10)}]
+    set a_fract [expr {$a_fract / pow(2,10)}]
+    set a_fix [expr {$a_int + $a_fract}]
+    if {$a_fix >= 1024} {
+      set a_fix [expr {-($a_fix - 1024)}]
+    }
+    puts "$a_hex | $a_fix"
+  }
+}
+
 proc set_gamma_coefficient { gamma } {
   for {set i 0} {$i < 1024} {incr i} {
     puts "Gamma LUT initialization: $i / 1023"
@@ -271,14 +313,34 @@ proc set_gamma_coefficient { gamma } {
   }
 }
 
+proc med_flt_en {} {
+  wr_csr $::median_filter_csr_offset 0 1
+}
+
+proc med_flt_dis {} {
+  wr_csr $::median_filter_csr_offset 0 0
+}
+
 proc set_exposure { e } {
-  wr_sccb_reg 0x3500 0x00
-  wr_sccb_reg 0x3501 0x[format %+02s [format %x $e]]
+  wr_sccb_reg 0x0202 [expr {$e / 256}]
+  wr_sccb_reg 0x0203 [expr {$e % 256}]
+}
+
+proc get_exposure {} {
+  set e_high [format %d [rd_sccb_reg 0x0202]]
+  set e_low [format %d [rd_sccb_reg 0x0203]]
+  puts "Exposure is set to [expr {$e_high * 256 + $e_low}]"
 }
 
 proc set_gain { g } {
-  wr_sccb_reg 0x350a [expr {$g / 256}]
-  wr_sccb_reg 0x350b [expr {$g % 256}]
+  wr_sccb_reg 0x0204 [expr {$g / 256}]
+  wr_sccb_reg 0x0205 [expr {$g % 256}]
+}
+
+proc get_gain {} {
+  set g_high [format %d [rd_sccb_reg 0x0204]]
+  set g_low [format %d [rd_sccb_reg 0x0205]]
+  puts "Gain is set to [expr {$g_high * 256 + $g_low}]"
 }
 
 proc get_snapshot {} {
