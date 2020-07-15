@@ -176,10 +176,7 @@ proc set_wb_mode { mode } {
 }
 
 proc wb_calibrate {} {
-  set wb_mode [rd_csr $::white_ballance_csr_offset 0]
-  if { $wb_mode != 0x00000003 } {
-    return "White balance corrector is not in calibration mode"
-  }
+  set_wb_mode calibration
   wr_csr $::white_ballance_csr_offset 1 0
   wr_csr $::white_ballance_csr_offset 1 1
 }
@@ -299,10 +296,28 @@ proc get_cc_matrix {} {
   }
 }
 
-proc set_gamma_coefficient { gamma } {
+proc set_gamma { gamma } {
   for {set i 0} {$i < 1024} {incr i} {
     puts "Gamma LUT initialization: $i / 1023"
     set table_val_double [expr {( [expr {double( $i )}] / 1024 ) ** $gamma * 1024}] 
+    set table_val_int [expr {int( $table_val_double )}]
+    set table_val_hex 0x[format %+08s [format %x $table_val_int]]
+    set table_addr_hex 0x[format %+08s [format %x $i]]
+    wr_csr $::gamma_csr_offset 0 $table_addr_hex
+    wr_csr $::gamma_csr_offset 1 $table_val_hex
+    wr_csr $::gamma_csr_offset 2 1
+    wr_csr $::gamma_csr_offset 2 0
+  }
+}
+
+proc set_srgb_gamma { } {
+  for {set i 0} {$i < 1024} {incr i} {
+    puts "Gamma LUT initialization: $i / 1023"
+    if { [expr {double( $i ) / 1024}] < 0.0031 } {
+      set table_val_double [expr {( double( $i ) / 1024 ) * 12.92 * 1024}] 
+    } else {
+      set table_val_double [expr {( 1.055 * ( double( $i ) / 1024 ) ** 0.416 - 0.055 ) * 1024}] 
+    }
     set table_val_int [expr {int( $table_val_double )}]
     set table_val_hex 0x[format %+08s [format %x $table_val_int]]
     set table_addr_hex 0x[format %+08s [format %x $i]]
@@ -345,6 +360,7 @@ proc get_gain {} {
 
 proc get_snapshot {} {
   dphy_dis
+  after 1000
   set_property CONTROL.TRIGGER_POSITION 0 [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
   set_property CONTROL.CAPTURE_MODE BASIC [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]
     set_property TRIGGER_COMPARE_VALUE eq11'hXXX [get_hw_probes pandacam_i/frame_buffer/inst/frame_buffer_inst/capture_logic.line_cnt -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]
@@ -374,5 +390,5 @@ proc get_snapshot {} {
     exec ./csv2img_line.py ./capture.csv ./img.hex
     puts "[expr {$i + 1}] / 1080 captured"
   }
-  dphy_en
+  #dphy_en
 }

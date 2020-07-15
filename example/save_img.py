@@ -25,6 +25,8 @@ for i in range( y ):
     l = d.readline().strip()
     d_img[i][j][2] = ( int( ( "0x" + l ), 16 ) / value_mult );
 
+cv2.imshow( "Mat", d_img )
+cv2.waitKey( 0 )
 cv2.imwrite( "snapshot.png", d_img )
 os.remove( "img.hex" )
 os.remove( "capture.csv" )
