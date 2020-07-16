@@ -5,6 +5,7 @@ set white_ballance_csr_offset  0x00030000
 set color_corrector_csr_offset 0x00040000
 set gamma_csr_offset           0x00050000
 set median_filter_csr_offset   0x00060000
+set blc_offset                 0x00070000
 
 proc conv_csr { d } {
   set h 0x[format %+08s [format %x [expr {$d * 4}]]]
@@ -356,6 +357,22 @@ proc get_gain {} {
   set g_high [format %d [rd_sccb_reg 0x0204]]
   set g_low [format %d [rd_sccb_reg 0x0205]]
   puts "Gain is set to [expr {$g_high * 256 + $g_low}]"
+}
+
+proc set_bl { bl } {
+  wr_csr $::blc_offset 0 1
+  wr_csr $::blc_offset 2 $bl
+}
+
+proc calibrat_bl {} {
+  wr_csr $::blc_offset 0 0
+  wr_csr $::blc_offset 1 1
+  wr_csr $::blc_offset 1 0
+}
+
+proc get_bl {} {
+  set bl [format %d [rd_csr $::blc_offset 3]]
+  puts "Black level is set to $bl"
 }
 
 proc get_snapshot {} {

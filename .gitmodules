@@ -5,7 +5,7 @@
 [submodule "ip/csi2_rx"]
 	path = ip/csi2_rx
 	url = https://github.com/hellgate202/csi2_rx
-        branch = master
+        branch = imx477
 [submodule "ip/hdmi_tx"]
 	path = ip/hdmi_tx
 	url = https://github.com/hellgate202/hdmi_tx

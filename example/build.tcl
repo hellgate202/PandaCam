@@ -46,7 +46,7 @@ set_property -dict [ list \
 # Interconnect from JTAG to other modules
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 csr_interconnect
 set_property -dict [ list \
-  CONFIG.NUM_MI {7}]      \
+  CONFIG.NUM_MI {8}]      \
 [get_bd_cells csr_interconnect]
 
 # Reset for 200 MHz clock
@@ -67,6 +67,16 @@ create_bd_cell -type ip -vlnv hellgate:user:csi2_2_lane_rx:1.0 csi2_2_lane_rx
 set_property -dict [ list      \
   CONFIG.CONTINIOUS_VALID {0}] \
 [get_bd_cells csi2_2_lane_rx]
+
+create_bd_cell -type ip -vlnv hellgate202:user:blc:1.0 blc
+set_property -dict [ list       \
+  CONFIG.CSR_BASE_ADDR {458752} \
+  CONFIG.FRAME_RES_X {1920}     \
+  CONFIG.FRAME_RES_Y {1080}     \
+  CONFIG.PX_WIDTH {10}          \
+  CONFIG.TDATA_WIDTH {16}       \
+  CONFIG.TDATA_WIDTH_B {2}]     \
+[get_bd_cells blc] 
 
 create_bd_cell -type ip -vlnv hellgate202:user:bilinear_demosaicing_3x3:1.0 bilinear_demosaicing_3x3
 set_property -dict [ list       \
@@ -157,6 +167,7 @@ connect_bd_net [get_bd_pins zynq_ps/FCLK_CLK0] [get_bd_pins ref_clk_rst/slowest_
 connect_bd_net [get_bd_pins zynq_ps/FCLK_CLK0] [get_bd_pins csi2_2_lane_rx/ref_clk_i]
 # 74.25 MHz
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins csi2_2_lane_rx/px_clk_i]
+connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins blc/clk_i]
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins bilinear_demosaicing_3x3/clk_i]
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins white_balance_corrector/clk_i]
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins color_corrector/clk_i]
@@ -174,6 +185,7 @@ connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins csr_interconnect/
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins csr_interconnect/M04_ACLK]
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins csr_interconnect/M05_ACLK]
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins csr_interconnect/M06_ACLK]
+connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins csr_interconnect/M07_ACLK]
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins memory_write_port_adapter/ACLK]
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins memory_write_port_adapter/S00_ACLK]
 connect_bd_net [get_bd_pins px_clk_mmcm/clk_out1] [get_bd_pins memory_write_port_adapter/M00_ACLK]
@@ -195,6 +207,7 @@ connect_bd_net [get_bd_pins zynq_ps/FCLK_RESET0_N] [get_bd_pins rd_clk_rst/ext_r
 connect_bd_net [get_bd_pins ref_clk_rst/peripheral_reset] [get_bd_pins csi2_2_lane_rx/ref_rst_i]
 connect_bd_net [get_bd_pins wr_clk_rst/peripheral_reset] [get_bd_pins frame_buffer/wr_rst_i]
 connect_bd_net [get_bd_pins wr_clk_rst/peripheral_reset] [get_bd_pins csi2_2_lane_rx/px_rst_i]
+connect_bd_net [get_bd_pins wr_clk_rst/peripheral_reset] [get_bd_pins blc/rst_i]
 connect_bd_net [get_bd_pins wr_clk_rst/peripheral_reset] [get_bd_pins bilinear_demosaicing_3x3/rst_i]
 connect_bd_net [get_bd_pins wr_clk_rst/peripheral_reset] [get_bd_pins white_balance_corrector/rst_i]
 connect_bd_net [get_bd_pins wr_clk_rst/peripheral_reset] [get_bd_pins color_corrector/rst_i]
@@ -210,6 +223,7 @@ connect_bd_net [get_bd_pins wr_clk_rst/interconnect_aresetn] [get_bd_pins csr_in
 connect_bd_net [get_bd_pins wr_clk_rst/interconnect_aresetn] [get_bd_pins csr_interconnect/M04_ARESETN] 
 connect_bd_net [get_bd_pins wr_clk_rst/interconnect_aresetn] [get_bd_pins csr_interconnect/M05_ARESETN] 
 connect_bd_net [get_bd_pins wr_clk_rst/interconnect_aresetn] [get_bd_pins csr_interconnect/M06_ARESETN] 
+connect_bd_net [get_bd_pins wr_clk_rst/interconnect_aresetn] [get_bd_pins csr_interconnect/M07_ARESETN] 
 connect_bd_net [get_bd_pins wr_clk_rst/interconnect_aresetn] [get_bd_pins memory_write_port_adapter/ARESETN]
 connect_bd_net [get_bd_pins wr_clk_rst/interconnect_aresetn] [get_bd_pins memory_write_port_adapter/S00_ARESETN]
 connect_bd_net [get_bd_pins wr_clk_rst/interconnect_aresetn] [get_bd_pins memory_write_port_adapter/M00_ARESETN]
@@ -227,7 +241,9 @@ connect_bd_intf_net [get_bd_intf_pins csr_interconnect/M03_AXI] [get_bd_intf_pin
 connect_bd_intf_net [get_bd_intf_pins csr_interconnect/M04_AXI] [get_bd_intf_pins color_corrector/csr]
 connect_bd_intf_net [get_bd_intf_pins csr_interconnect/M05_AXI] [get_bd_intf_pins gamma_corrector/csr]
 connect_bd_intf_net [get_bd_intf_pins csr_interconnect/M06_AXI] [get_bd_intf_pins median_filter/csr]
-connect_bd_intf_net [get_bd_intf_pins csi2_2_lane_rx/video] [get_bd_intf_pins bilinear_demosaicing_3x3/raw]
+connect_bd_intf_net [get_bd_intf_pins csr_interconnect/M07_AXI] [get_bd_intf_pins blc/csr]
+connect_bd_intf_net [get_bd_intf_pins csi2_2_lane_rx/video] [get_bd_intf_pins blc/video_i]
+connect_bd_intf_net [get_bd_intf_pins blc/video_o] [get_bd_intf_pins bilinear_demosaicing_3x3/raw]
 connect_bd_intf_net [get_bd_intf_pins bilinear_demosaicing_3x3/rgb] [get_bd_intf_pins white_balance_corrector/video_i]
 connect_bd_intf_net [get_bd_intf_pins white_balance_corrector/video_o] [get_bd_intf_pins color_corrector/video_i]
 connect_bd_intf_net [get_bd_intf_pins color_corrector/video_o] [get_bd_intf_pins gamma_corrector/video_i]
@@ -290,6 +306,7 @@ connect_bd_intf_net [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins zynq_ps/FIXED
 assign_bd_address [get_bd_addr_segs {csi2_2_lane_rx/csi2_csr/csi2_csr }]
 assign_bd_address [get_bd_addr_segs {csi2_2_lane_rx/sccb_ctrl/sccb_ctrl }]
 assign_bd_address [get_bd_addr_segs {bilinear_demosaicing_3x3/csr }]
+set_property offset 0x00070000 [get_bd_addr_segs {jtag_axi/Data/SEG_blc_csr}]
 set_property offset 0x00060000 [get_bd_addr_segs {jtag_axi/Data/SEG_median_filter_csr}]
 set_property offset 0x00050000 [get_bd_addr_segs {jtag_axi/Data/SEG_gamma_corrector_csr}]
 set_property offset 0x00040000 [get_bd_addr_segs {jtag_axi/Data/SEG_color_corrector_csr}]
@@ -321,6 +338,7 @@ catch { config_ip_cache -export [get_ips -all pandacam_jtag_axi_0] }
 catch { config_ip_cache -export [get_ips -all pandacam_hdmi_tx_0] }
 catch { config_ip_cache -export [get_ips -all pandacam_csi2_2_lane_rx_0] }
 catch { config_ip_cache -export [get_ips -all pandacam_frame_buffer_0] }
+catch { config_ip_cache -export [get_ips -all pandacam_blc_0] }
 catch { config_ip_cache -export [get_ips -all pandacam_bilinear_demosaicing_3x3_0] }
 catch { config_ip_cache -export [get_ips -all pandacam_white_balance_corrector_0] }
 catch { config_ip_cache -export [get_ips -all pandacam_color_corrector_0] }
@@ -342,6 +360,7 @@ launch_runs -jobs 4 {               \
   pandacam_hdmi_tx_0_synth_1        \
   pandacam_csi2_2_lane_rx_0_synth_1 \
   pandacam_frame_buffer_0_synth_1   \
+  pandacam_blc_0_synth_1  \
   pandacam_bilinear_demosaicing_3x3_0_synth_1  \
   pandacam_white_balance_corrector_0_synth_1  \
   pandacam_color_corrector_0_synth_1  \
@@ -361,6 +380,7 @@ wait_on_run pandacam_jtag_axi_0_synth_1
 wait_on_run pandacam_hdmi_tx_0_synth_1
 wait_on_run pandacam_csi2_2_lane_rx_0_synth_1
 wait_on_run pandacam_frame_buffer_0_synth_1
+wait_on_run pandacam_blc_0_synth_1
 wait_on_run pandacam_bilinear_demosaicing_3x3_0_synth_1
 wait_on_run pandacam_white_balance_corrector_0_synth_1
 wait_on_run pandacam_color_corrector_0_synth_1
