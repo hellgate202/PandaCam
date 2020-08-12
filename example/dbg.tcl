@@ -345,6 +345,9 @@ proc set_px_subsampling { px px_int px_add ln ln_int ln_add } {
   wr_csr $::px_subsampler_csr_offset 5 $ln_add
   wr_csr $::px_subsampler_csr_offset 0 $px
   wr_csr $::px_subsampler_csr_offset 3 $ln
+  wr_csr $::px_subsampler_csr_offset 6 0
+  wr_csr $::px_subsampler_csr_offset 6 1
+  wr_csr $::px_subsampler_csr_offset 6 0
 }
 
 proc set_exposure { e } {

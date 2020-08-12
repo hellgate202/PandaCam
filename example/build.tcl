@@ -258,8 +258,6 @@ connect_bd_intf_net [get_bd_intf_pins csr_interconnect/M07_AXI] [get_bd_intf_pin
 connect_bd_intf_net [get_bd_intf_pins csr_interconnect/M08_AXI] [get_bd_intf_pins px_subsampler/csr]
 connect_bd_intf_net [get_bd_intf_pins csi2_2_lane_rx/video] [get_bd_intf_pins blc/video_i]
 connect_bd_intf_net [get_bd_intf_pins blc/video_o] [get_bd_intf_pins bilinear_demosaicing_3x3/raw]
-connect_bd_intf_net [get_bd_intf_pins csr_interconnect/M08_AXI] [get_bd_intf_pins px_subsampler/csr]
-connect_bd_intf_net [get_bd_intf_pins csi2_2_lane_rx/video] [get_bd_intf_pins bilinear_demosaicing_3x3/raw]
 connect_bd_intf_net [get_bd_intf_pins bilinear_demosaicing_3x3/rgb] [get_bd_intf_pins white_balance_corrector/video_i]
 connect_bd_intf_net [get_bd_intf_pins white_balance_corrector/video_o] [get_bd_intf_pins color_corrector/video_i]
 connect_bd_intf_net [get_bd_intf_pins color_corrector/video_o] [get_bd_intf_pins gamma_corrector/video_i]
