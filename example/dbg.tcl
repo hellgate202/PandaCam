@@ -6,6 +6,7 @@ set color_corrector_csr_offset 0x00040000
 set gamma_csr_offset           0x00050000
 set median_filter_csr_offset   0x00060000
 set blc_offset                 0x00070000
+set px_subsampler_csr_offset   0x00080000
 
 proc conv_csr { d } {
   set h 0x[format %+08s [format %x [expr {$d * 4}]]]
@@ -335,6 +336,15 @@ proc med_flt_en {} {
 
 proc med_flt_dis {} {
   wr_csr $::median_filter_csr_offset 0 0
+}
+
+proc set_px_subsampling { px px_int px_add ln ln_int ln_add } {
+  wr_csr $::px_subsampler_csr_offset 1 $px_int
+  wr_csr $::px_subsampler_csr_offset 2 $px_add
+  wr_csr $::px_subsampler_csr_offset 4 $ln_int
+  wr_csr $::px_subsampler_csr_offset 5 $ln_add
+  wr_csr $::px_subsampler_csr_offset 0 $px
+  wr_csr $::px_subsampler_csr_offset 3 $ln
 }
 
 proc set_exposure { e } {
