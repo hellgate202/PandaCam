@@ -459,89 +459,6 @@ set_property target_constrs_file ./pandacam.srcs/constrs_1/new/pandacam.xdc [cur
 # Timing constraints
 create_clock -period 2.976 -name dphy_clk -waveform {0.000 1.488} [get_ports dphy_clk_p_i]
 
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/byte_align[*].settle_ignore/FSM_onehot_state_reg[4]] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/hs_data_valid_d1_reg[*]] 5.000
-
-#set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/hs_data_valid_d1_reg[*]]
-#set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/hs_data_valid_d2_reg[*]]
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_detect/clk_presence_cnt_reg[*]] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_loss_rst*] 5.000
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_loss_rst_d1_reg]
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_loss_rst_d2_reg]
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/wr_ptr_gray_wr_clk_reg[*]] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/wr_ptr_gray_rd_clk_reg[*]] 11.904
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/wr_ptr_gray_rd_clk_reg[*]]
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/wr_ptr_gray_rd_clk_mtstb_reg[*]]
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rd_ptr_gray_rd_clk_reg[*]] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rd_ptr_gray_wr_clk_reg[*]] 11.904
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rd_ptr_gray_wr_clk_reg[*]]
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rd_ptr_gray_wr_clk_mtstb_reg[*]]
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/wr_clk_rst/U0/PR_OUT_DFF[0].FDRE_PER] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rst_wr_clk_d1_reg] 11.904
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rst_wr_clk_d1_reg] 
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/wr_clk_rst/U0/PR_OUT_DFF[0].FDRE_PER] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rst_wr_clk_d2_reg] 11.904
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rst_wr_clk_d2_reg] 
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rst_rd_clk_d1_reg] 
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/dphy_int_cdc/rst_rd_clk_d2_reg]
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/dphy_byte_clk_meas/sec_stb_cdc/stb_i_lock_reg] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/dphy_byte_clk_meas/sec_stb_cdc/stb_sync_reg[0]] 11.904
-
-#set_max_delay -datapath_only -from [get_cells pandacam_i/px_clk_rst/U0/PR_OUT_DFF[0].FDRE_PER] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/dphy_byte_clk_meas/meas_rst_sync/rst_d_reg[*]] 11.904
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/dphy_byte_clk_meas/meas_cnt_gray_reg[*]] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/dphy_byte_clk_meas/meas_cnt_gray_ref_clk_reg[*]] 11.904
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/dphy_byte_clk_meas/sec_stb_cdc/stb_sync_reg[0]] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/dphy_byte_clk_meas/sec_stb_cdc/stb_deasset/rst_d_reg[*]] 11.904
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_csr/cr_reg[1][0]] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/axi4_conv/enable_d1_reg] 11.904
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/axi4_conv/enable_d1_reg]
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/axi4_conv/enable_d2_reg]
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_detect/toggle_bit_reg] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_detect/toggle_bit_s1_reg] 5.000
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_detect/toggle_bit_s1_reg]
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_detect/toggle_bit_s2_reg]
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/phy/clk_detect/toggle_bit_s3_reg]
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/crc_calc/crc_failed_o_reg] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/crc_err_d1_reg] 11.904
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/crc_err_d1_reg]
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/crc_err_d2_reg]
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/header_corrector/error_corrected_o_reg] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/corr_header_err_d1_reg] 11.904
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/corr_header_err_d1_reg] 
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/corr_header_err_d2_reg] 
-
-set_max_delay -datapath_only -from [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_rx/header_corrector/error_o_reg] -to \
-                                   [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/header_err_d1_reg] 11.904
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/header_err_d1_reg] 
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/csi2_stat_acc/header_err_d2_reg] 
-
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/sccb_master/i2c_master_phy/mstb_scl_reg[*]]
-set_property ASYNC_REG TRUE [get_cells pandacam_i/csi2_2_lane_rx/inst/sccb_master/i2c_master_phy/mstb_sda_reg[*]]
-
 # Saving previous constraints to file
 save_constraints -force
 
@@ -641,8 +558,11 @@ if { $capture > 0 } {
 launch_runs impl_1 -to_step write_bitstream -jobs 4
 wait_on_run impl_1
 
+open_run impl_1
+write_hw_platform -fixed -include_bit -force -file ./pandacam_wrapper.xsa
+
 # Export Hardware
 file mkdir ./pandacam.sdk
-file copy -force ./pandacam.runs/impl_1/pandacam_wrapper.sysdef ./pandacam.sdk/pandacam_wrapper.hdf
+file copy -force ./pandacam_wrapper.xsa ./pandacam.sdk/pandacam_wrapper.hdf
 
 exit
